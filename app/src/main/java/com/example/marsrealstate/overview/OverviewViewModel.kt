@@ -1,8 +1,14 @@
 package com.example.marsrealstate.overview
 
+
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.marsrealstate.network.MarsApi
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
 
 class OverviewViewModel: ViewModel() {
 
@@ -15,7 +21,15 @@ class OverviewViewModel: ViewModel() {
     }
 
     private fun getMarsRealEstateProperties() {
-        _response.value = "set the Mars API response here!"
+        MarsApi.retrofitService.getProperties().enqueue(object: Callback<String> {
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                _response.value = "Failure" + t.message
+            }
+
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                _response.value = response.body()
+            }
+        })
     }
 
 }
