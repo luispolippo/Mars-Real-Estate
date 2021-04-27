@@ -3,7 +3,9 @@ package com.example.marsrealstate.overview
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.example.marsrealstate.R
 import com.example.marsrealstate.databinding.FragmentOverviewBinding
 import com.example.marsrealstate.databinding.GridViewItemBinding
@@ -19,9 +21,20 @@ class OverviewFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding = GridViewItemBinding.inflate(inflater)
+        val binding = FragmentOverviewBinding.inflate(inflater)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
+
+        binding.photosGrid.adapter = PhotoGridAdapter(PhotoGridAdapter.OnClickListener{
+            viewModel.displayPropertyDetails(it)
+        })
+
+        viewModel.navigateToSelectedProperty.observe(viewLifecycleOwner, Observer {
+            if(null != it){
+                this.findNavController().navigate(OverviewFragmentDirections.actionShowDetail(it))
+                viewModel.displayPropertyDetailsComplete()
+            }
+        })
 
         setHasOptionsMenu(true)
 
